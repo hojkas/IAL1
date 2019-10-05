@@ -32,6 +32,8 @@
 **
 **/
 
+//I ADDED THIS
+
 #include "c202.h"
 
 int solved;
@@ -58,7 +60,7 @@ void stackInit ( tStack* s ) {
 **
 ** V případě, že funkce dostane jako parametr s == NULL,
 ** volejte funkci stackError(SERR_INIT). U ostatních funkcí pro zjednodušení
-** předpokládejte, že tato situace nenastane. 
+** předpokládejte, že tato situace nenastane.
 */
 
 	  solved = 0;                      /* V případě řešení, smažte tento řádek! */
@@ -92,7 +94,7 @@ void stackTop ( const tStack* s, char* c ) {
 ** Vrací znak z vrcholu zásobníku prostřednictvím parametru c.
 ** Tato operace ale prvek z vrcholu zásobníku neodstraňuje.
 ** Volání operace Top při prázdném zásobníku je nekorektní
-** a ošetřete ho voláním funkce stackError(SERR_TOP). 
+** a ošetřete ho voláním funkce stackError(SERR_TOP).
 **
 ** Pro ověření, zda je zásobník prázdný, použijte dříve definovanou
 ** funkci stackEmpty.
@@ -112,7 +114,7 @@ void stackPop ( tStack* s ) {
 ** pro ošetření chyby zde nevolejte (můžeme zásobník ponechat prázdný).
 ** Spíše než volání chyby by se zde hodilo vypsat varování, což však pro
 ** jednoduchost neděláme.
-** 
+**
 */
 
 	  solved = 0;                      /* V případě řešení, smažte tento řádek! */
