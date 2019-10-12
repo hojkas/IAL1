@@ -14,11 +14,11 @@
 **
 ** Implementujte následující funkci:
 **
-**    infix2postfix .... konverzní funkce pro převod infixového výrazu 
+**    infix2postfix .... konverzní funkce pro převod infixového výrazu
 **                       na postfixový
 **
 ** Pro lepší přehlednost kódu implementujte následující pomocné funkce:
-**    
+**
 **    untilLeftPar .... vyprázdnění zásobníku až po levou závorku
 **    doOperation .... zpracování operátoru konvertovaného výrazu
 **
@@ -47,7 +47,19 @@ int solved;
 ** nadeklarovat a používat pomocnou proměnnou typu char.
 */
 void untilLeftPar ( tStack* s, char* postExpr, unsigned* postLen ) {
-
+  char popped;
+  //check jestli neni prazdny
+  if(stackEmpty) return;
+  //ulozi vrchol zasobniku do popped a popne jednu polozku
+  stackTop(s, &popped);
+  stackPop(s);
+  while(!stackEmpty && popped != '(') {//pri nalezeni ( cyklus konci, netreba nic zapisovat do postExpr
+    postExpr[*postLen] = popped;
+    (*postLen)++;
+    stackTop(s, &popped);
+    stackPop(s);
+  } //neresim pripad, kdy v popped neco zustane nevypsano - to by se mohlo stat
+  //pouze v pripade spatneho vstupniho vyrazu, coz nemam resit
 }
 
 /*
@@ -56,15 +68,15 @@ void untilLeftPar ( tStack* s, char* postExpr, unsigned* postLen ) {
 ** vstupního pole znaků.
 **
 ** Dle priority předaného operátoru a případně priority operátoru na
-** vrcholu zásobníku rozhodneme o dalším postupu. Délka převedeného 
-** výrazu a taktéž ukazatel na první volné místo, do kterého se má zapisovat, 
+** vrcholu zásobníku rozhodneme o dalším postupu. Délka převedeného
+** výrazu a taktéž ukazatel na první volné místo, do kterého se má zapisovat,
 ** představuje parametr postLen, výstupním polem znaků je opět postExpr.
 */
 void doOperation ( tStack* s, char c, char* postExpr, unsigned* postLen ) {
 
 }
 
-/* 
+/*
 ** Konverzní funkce infix2postfix.
 ** Čte infixový výraz ze vstupního řetězce infExpr a generuje
 ** odpovídající postfixový výraz do výstupního řetězce (postup převodu
@@ -87,14 +99,14 @@ void doOperation ( tStack* s, char c, char* postExpr, unsigned* postLen ) {
 **    závorek. Uvažujte, že vstupní výraz je zapsán správně (neošetřujte
 **    chybné zadání výrazu).
 **
-** 4. Každý korektně zapsaný výraz (infixový i postfixový) musí být uzavřen 
+** 4. Každý korektně zapsaný výraz (infixový i postfixový) musí být uzavřen
 **    ukončovacím znakem '='.
 **
 ** 5. Při stejné prioritě operátorů se výraz vyhodnocuje zleva doprava.
 **
 ** Poznámky k implementaci
 ** -----------------------
-** Jako zásobník použijte zásobník znaků tStack implementovaný v příkladu c202. 
+** Jako zásobník použijte zásobník znaků tStack implementovaný v příkladu c202.
 ** Pro práci se zásobníkem pak používejte výhradně operace z jeho rozhraní.
 **
 ** Při implementaci využijte pomocné funkce untilLeftPar a doOperation.
