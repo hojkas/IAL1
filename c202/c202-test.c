@@ -18,7 +18,7 @@ int STACK_SIZE;                               /* efektivní velikost zásobníku
 int err_flag;                                              /* indikátor chyby */
 int solved;                                        /* indikátor řešení funkce */
 
-/****************************************************************************** 
+/******************************************************************************
  * Speciální ošetření testovaných funkcí.                                     *
  ******************************************************************************/
 
@@ -93,7 +93,7 @@ void use_stack_push ( tStack* ptrstack, char c ) {
 		printf("[W] Funkce stackPush nebyla implementována.\n");
 }
 
-/****************************************************************************** 
+/******************************************************************************
  * Vlastní testování                                                          *
  ******************************************************************************/
 
@@ -153,7 +153,7 @@ int main (int argc, char* argv[]) {
 	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 	use_stack_empty(ptrstack);
 	use_stack_full(ptrstack);
- 
+
 	printf("\n\n----- C202 - The End of Basic Tests -----\n");
 
 	free(ptrstack);

@@ -32,8 +32,6 @@
 **
 **/
 
-//I ADDED THIS
-
 #include "c202.h"
 
 int solved;
@@ -62,8 +60,11 @@ void stackInit ( tStack* s ) {
 ** volejte funkci stackError(SERR_INIT). U ostatních funkcí pro zjednodušení
 ** předpokládejte, že tato situace nenastane.
 */
-
-	  solved = 0;                      /* V případě řešení, smažte tento řádek! */
+	if(s == NULL) {
+		stackError(SERR_INIT);
+		return; //V případě, že je ukazatel neplatný, funkce již zde skončí, aby nebylo provedeno přiřazení hodnoty zásobníku
+	}
+	s->top = -1;
 }
 
 int stackEmpty ( const tStack* s ) {
@@ -72,8 +73,7 @@ int stackEmpty ( const tStack* s ) {
 ** Funkci implementujte jako jediný příkaz. Vyvarujte se zejména konstrukce
 ** typu "if ( true ) b=true else b=false".
 */
-
-	  solved = 0;                      /* V případě řešení, smažte tento řádek! */
+	return (s->top == -1 ? 1 : 0); //Je-li zásobník prázdny, tj. top == -1, vrátí nenulovou hodnotu, v opačném případě nulovou
 }
 
 int stackFull ( const tStack* s ) {
@@ -85,8 +85,8 @@ int stackFull ( const tStack* s ) {
 **
 ** Funkci implementujte jako jediný příkaz.
 */
-
-	  solved = 0;                      /* V případě řešení, smažte tento řádek! */
+	return (s->top < STACK_SIZE - 1 ? 0 : 1);
+	//ověří velikost zásobníku, je-li velikost menší než STACK_SIZE - 1 (-1 proto, že indexujeme od 0, velikost STACK_SIZE - 1 odpovídá plnému zásobníku)
 }
 
 void stackTop ( const tStack* s, char* c ) {
@@ -99,8 +99,11 @@ void stackTop ( const tStack* s, char* c ) {
 ** Pro ověření, zda je zásobník prázdný, použijte dříve definovanou
 ** funkci stackEmpty.
 */
-
-	  solved = 0;                      /* V případě řešení, smažte tento řádek! */
+	if (stackEmpty(s)) {
+		stackError(SERR_TOP);
+		return;
+	}
+	*c = s->arr[s->top]; //vrátí znak na vrcholu zásobníku, v s->top je index, nikoli velikost, takže není třeba měnit tuto hodnotu o 1
 }
 
 
@@ -116,8 +119,8 @@ void stackPop ( tStack* s ) {
 ** jednoduchost neděláme.
 **
 */
-
-	  solved = 0;                      /* V případě řešení, smažte tento řádek! */
+	if( ! stackEmpty(s)) (s->top)--;
+	//nejedná-li se o případ s vysokým důrazem na bezpečnost, není důvod uvolněné místo nijak mazat, pouze zmenším aktuální velikost zásobníku
 }
 
 
@@ -129,8 +132,15 @@ void stackPush ( tStack* s, char c ) {
 ** Pro ověření, zda je zásobník plný, použijte dříve definovanou
 ** funkci stackFull.
 */
+	if(stackFull(s)) {
+		stackError(SERR_PUSH);
+		return;
+	}
 
-	  solved = 0;                      /* V případě řešení, smažte tento řádek! */
+	//zvětší velikost zásobníku
+	(s->top)++;
+	//na dané místo na vrchol uloží znak c
+	s->arr[s->top] = c;
 }
 
 /* Konec c202.c */
