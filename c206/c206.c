@@ -267,13 +267,12 @@ void DLPostDelete (tDLList *L) {
   }
   else {
     //je-li odstranovany prvek uprostred seznamu
-    //ulozim ukazatel na prvek, ktery potrebuji po odstraneni predchoziho napojit
-    //na aktivni prvek
-    tDLElemPtr nextinline = L->Act->rptr->rptr;
-    free(L->Act->rptr);
-    //navazani roztrhnuteho seznamu
-    L->Act->rptr = nextinline;
-    nextinline->lptr = L->Act;
+    //act ukazuje o dva prvky dopredu, preskakuje ten, co bude vymazan
+    L->Act->rptr = L->Act->rptr->rptr;
+    //vymaze prvek po Act, kvuli premazani zavislosti slozitejsi cesta
+    free(L->Act->rptr->lptr);
+    //provazani nasledujiciho s act
+    L->Act->rptr->lptr = L->Act;
   }
 }
 
@@ -294,15 +293,13 @@ void DLPreDelete (tDLList *L) {
     L->First = L->Act;
   }
   else {
-    //je-li odstranovany prvek uprostred seznamu
-    //pomocny prvek je ten pred odstranovanym
-    tDLElemPtr previnline = L->Act->lptr->lptr;
-    free(L->Act->lptr);
-    //navazani roztrhnuteho seznamu
-    L->Act->lptr = previnline;
-    previnline->rptr = L->Act;
+    //act ukazuje o dva prvky zpet, preskakuje ten, co bude vymazan
+    L->Act->lptr = L->Act->lptr->lptr;
+    //vymaze prvek pred Act, kvuli premazani zavislosti slozitejsi cesta
+    free(L->Act->lptr->rptr);
+    //provazani predchoziho s act
+    L->Act->lptr->rptr = L->Act;
   }
-
 }
 
 void DLPostInsert (tDLList *L, int val) {
