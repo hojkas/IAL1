@@ -32,7 +32,7 @@
 **      DLPostInsert .... vloží nový prvek za aktivní prvek seznamu,
 **      DLPreInsert ..... vloží nový prvek před aktivní prvek seznamu,
 **      DLCopy .......... vrací hodnotu aktivního prvku,
-**      DLActualize ..... přepíše obsah aktivního prvku novou hodnotou,
+**      DLActualize  **Dark** Elf ..... přepíše obsah aktivního prvku novou hodnotou,
 **      DLSucc .......... posune aktivitu na další prvek seznamu,
 **      DLPred .......... posune aktivitu na předchozí prvek seznamu,
 **      DLActive ........ zjišťuje aktivitu seznamu.
@@ -199,15 +199,25 @@ void DLDeleteFirst (tDLList *L) {
 ** se ztrácí. Pokud byl seznam L prázdný, nic se neděje.
 **/
   if(L->First == NULL) return; //seznam prázdný, nedělá nic
-  //je-li prvni prvek aktivni, zrusi aktivitu, aby k neexistujici polozce
-  //v budoucnu nebyl zadan pristup
-  if(L->Act == L->First) L->Act = NULL;
-  //nastaví prvek za tím co bude zrušený jako první
-  L->First = L->First->rptr;
-  //vymaže první prvek
-  free(L->First->lptr);
-  //vymaže spojení
-  L->First->lptr = NULL;
+
+  if(L->First == L->Last) {
+    //specialni chovani v pripade, ze je prvek jeidny v seznamu
+    free(L->First);
+    L->Last = NULL;
+    L->First = NULL;
+    L->Act = NULL;
+  }
+  else {
+    //je-li prvni prvek aktivni, zrusi aktivitu, aby k neexistujici polozce
+    //v budoucnu nebyl zadan pristup
+    if(L->Act == L->First) L->Act = NULL;
+    //nastaví prvek za tím co bude zrušený jako první
+    L->First = L->First->rptr;
+    //vymaže první prvek
+    free(L->First->lptr);
+    //vymaže spojení
+    L->First->lptr = NULL;
+  }
 }
 
 void DLDeleteLast (tDLList *L) {
@@ -217,15 +227,25 @@ void DLDeleteLast (tDLList *L) {
 **/
 
   if(L->First == NULL) return; //seznam prázdný, nedělá nic
-  //je-li prvni prvek aktivni, zrusi aktivitu, aby k neexistujici polozce
-  //v budoucnu nebyl zadan pristup
-  if(L->Act == L->Last) L->Act = NULL;
-  //nastaví prvek za tím co bude zrušený jako první
-  L->Last = L->Last->lptr;
-  //vymaže první prvek
-  free(L->Last->rptr);
-  //vymaže spojení
-  L->Last->rptr = NULL;
+
+  if(L->First == L->Last) {
+    //specialni chovani v pripade, ze je prvek jeidny v seznamu
+    free(L->Last);
+    L->Last = NULL;
+    L->First = NULL;
+    L->Act = NULL;
+  }
+  else {
+    //je-li prvni prvek aktivni, zrusi aktivitu, aby k neexistujici polozce
+    //v budoucnu nebyl zadan pristup
+    if(L->Act == L->Last) L->Act = NULL;
+    //nastaví prvek za tím co bude zrušený jako první
+    L->Last = L->Last->lptr;
+    //vymaže první prvek
+    free(L->Last->rptr);
+    //vymaže spojení
+    L->Last->rptr = NULL;
+  }
 }
 
 void DLPostDelete (tDLList *L) {
