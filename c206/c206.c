@@ -199,6 +199,9 @@ void DLDeleteFirst (tDLList *L) {
 ** se ztrácí. Pokud byl seznam L prázdný, nic se neděje.
 **/
   if(L->First == NULL) return; //seznam prázdný, nedělá nic
+  //je-li prvni prvek aktivni, zrusi aktivitu, aby k neexistujici polozce
+  //v budoucnu nebyl zadan pristup
+  if(L->Act == L->First) L->Act = NULL;
   //nastaví prvek za tím co bude zrušený jako první
   L->First = L->First->rptr;
   //vymaže první prvek
@@ -214,6 +217,9 @@ void DLDeleteLast (tDLList *L) {
 **/
 
   if(L->First == NULL) return; //seznam prázdný, nedělá nic
+  //je-li prvni prvek aktivni, zrusi aktivitu, aby k neexistujici polozce
+  //v budoucnu nebyl zadan pristup
+  if(L->Act == L->Last) L->Act = NULL;
   //nastaví prvek za tím co bude zrušený jako první
   L->Last = L->Last->lptr;
   //vymaže první prvek
@@ -229,8 +235,26 @@ void DLPostDelete (tDLList *L) {
 ** posledním prvkem seznamu, nic se neděje.
 **/
 
+  //je-li seznam neaktivni nebo je-li aktivni prvek poslednim (druha podminka
+  //zaroven vylouci take moznost prazdneho seznamu), funkce nic nevykona
+  if(L->Act == NULL || L->Act == L->Last) return;
 
- solved = FALSE;                   /* V případě řešení, smažte tento řádek! */
+  if(L->Act->rptr == L->Last) {
+    //ma-li byt odstraneny posledni prvek
+    free(L->Last);
+    L->Act->rptr = NULL;
+    L->Last = L->Act;
+  }
+  else {
+    //je-li odstranovany prvek uprostred seznamu
+    //ulozim ukazatel na prvek, ktery potrebuji po odstraneni predchoziho napojit
+    //na aktivni prvek
+    tDLElemPtr nextinline = L->Act->rptr->rptr;
+    free(L->Act->rptr);
+    //navazani roztrhnuteho seznamu
+    L->Act->rptr = nextinline;
+    nextinline->lptr = L->Act;
+  }
 }
 
 void DLPreDelete (tDLList *L) {
@@ -240,8 +264,25 @@ void DLPreDelete (tDLList *L) {
 ** prvním prvkem seznamu, nic se neděje.
 **/
 
+  //neaktivni seznam, prazdny nebo s akt. na zacatku nic neprovede
+  if(L->Act == NULL || L->Act == L->First) return;
 
- solved = FALSE;                   /* V případě řešení, smažte tento řádek! */
+  if(L->Act->lptr == L->First) {
+    //ma-li byt odstraneny prvni prvek
+    free(L->First);
+    L->Act->lptr = NULL;
+    L->First = L->Act;
+  }
+  else {
+    //je-li odstranovany prvek uprostred seznamu
+    //pomocny prvek je ten pred odstranovanym
+    tDLElemPtr previnline = L->Act->lptr->lptr;
+    free(L->Act->lptr);
+    //navazani roztrhnuteho seznamu
+    L->Act->lptr = previnline;
+    previnline->rptr = L->Act;
+  }
+
 }
 
 void DLPostInsert (tDLList *L, int val) {
@@ -251,9 +292,32 @@ void DLPostInsert (tDLList *L, int val) {
 ** V případě, že není dostatek paměti pro nový prvek při operaci malloc,
 ** volá funkci DLError().
 **/
+  if(L->Act == NULL) return;
 
+  tDLElemPtr toAdd = malloc(sizeof(struct tDLElem));
+  if(toAdd == NULL) { //kontrola prirazeni pameti
+    DLError();
+    return;
+  }
 
- solved = FALSE;                   /* V případě řešení, smažte tento řádek! */
+  toAdd->data = val;
+
+  if(L->Act == L->Last) {
+    //je-li aktivni prvek poslednim
+    L->Act->rptr = toAdd;
+    toAdd->lptr = L->Act;
+    toAdd->rptr = NULL;
+    L->Last = toAdd;
+  }
+  else {
+    //aktivni neni posledni
+    //nastaveni ukazatelu toAdd prvku
+    toAdd->rptr = L->Act->rptr;
+    toAdd->lptr = L->Act;
+    //nastaveni ukazatelu kolem prvku toAdd na něj
+    toAdd->rptr->lptr = toAdd;
+    L->Act->rptr = toAdd;
+  }
 }
 
 void DLPreInsert (tDLList *L, int val) {
@@ -263,9 +327,33 @@ void DLPreInsert (tDLList *L, int val) {
 ** V případě, že není dostatek paměti pro nový prvek při operaci malloc,
 ** volá funkci DLError().
 **/
+  if(L->Act == NULL) return;
 
+  tDLElemPtr toAdd = malloc(sizeof(struct tDLElem));
+  if(toAdd == NULL) { //kontrola prirazeni pameti
+    DLError();
+    return;
+  }
 
- solved = FALSE;                   /* V případě řešení, smažte tento řádek! */
+  toAdd->data = val;
+
+  if(L->Act == L->First) {
+    //je-li aktivni prvek prvnim
+    L->Act->lptr = toAdd;
+    toAdd->rptr = L->Act;
+    toAdd->lptr = NULL;
+    L->First = toAdd;
+  }
+  else {
+    //aktivni neni prvni
+    //nastaveni ukazatelu toAdd prvku
+    toAdd->lptr = L->Act->lptr;
+    toAdd->rptr = L->Act;
+    //nastaveni ukazatelu kolem prvku toAdd na něj
+    toAdd->lptr->rptr = toAdd;
+    L->Act->lptr = toAdd;
+  }
+
 }
 
 void DLCopy (tDLList *L, int *val) {
@@ -273,10 +361,8 @@ void DLCopy (tDLList *L, int *val) {
 ** Prostřednictvím parametru val vrátí hodnotu aktivního prvku seznamu L.
 ** Pokud seznam L není aktivní, volá funkci DLError ().
 **/
-
-
-
- solved = FALSE;                   /* V případě řešení, smažte tento řádek! */
+  if(L->Act == NULL) DLError();
+  else *val = L->Act->data;
 }
 
 void DLActualize (tDLList *L, int val) {
@@ -284,9 +370,7 @@ void DLActualize (tDLList *L, int val) {
 ** Přepíše obsah aktivního prvku seznamu L.
 ** Pokud seznam L není aktivní, nedělá nic.
 **/
-
-
- solved = FALSE;                   /* V případě řešení, smažte tento řádek! */
+  if(L->Act != NULL) L->Act->data = val;
 }
 
 void DLSucc (tDLList *L) {
@@ -295,9 +379,9 @@ void DLSucc (tDLList *L) {
 ** Není-li seznam aktivní, nedělá nic.
 ** Všimněte si, že při aktivitě na posledním prvku se seznam stane neaktivním.
 **/
-
-
- solved = FALSE;                   /* V případě řešení, smažte tento řádek! */
+  if(L->Act != NULL) L->Act = L->Act->rptr;
+  //posledni prvek neni treba osetrovat, pri posledni polozce se do L->Act
+  //prekopiruje hodnota rptr, coz je u posledniho prvku NULL
 }
 
 
@@ -307,9 +391,7 @@ void DLPred (tDLList *L) {
 ** Není-li seznam aktivní, nedělá nic.
 ** Všimněte si, že při aktivitě na prvním prvku se seznam stane neaktivním.
 **/
-
-
- solved = FALSE;                   /* V případě řešení, smažte tento řádek! */
+  if(L->Act != NULL) L->Act = L->Act->lptr;
 }
 
 int DLActive (tDLList *L) {
@@ -317,9 +399,9 @@ int DLActive (tDLList *L) {
 ** Je-li seznam L aktivní, vrací nenulovou hodnotu, jinak vrací 0.
 ** Funkci je vhodné implementovat jedním příkazem return.
 **/
-
-
- solved = FALSE;                   /* V případě řešení, smažte tento řádek! */
+  return (L->Act != NULL);
+  //vraci hodnotu vyrazu, je-li aktivni, podminka plati, takze nenulovou (true)
+  //je-li prazdny, vrati 0 (false)
 }
 
 /* Konec c206.c*/
