@@ -3,8 +3,7 @@ make advanced
 echo "TEST BEGIN
 ----------"
 diff output c204-advanced-test.output
-echo "----------
+echo "--------------
 TEST END"
 rm output
 make clean
-
