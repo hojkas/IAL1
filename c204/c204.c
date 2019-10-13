@@ -49,11 +49,11 @@ int solved;
 void untilLeftPar ( tStack* s, char* postExpr, unsigned* postLen ) {
   char popped;
   //check jestli neni prazdny
-  if(stackEmpty) return;
+  if(stackEmpty(s)) return;
   //ulozi vrchol zasobniku do popped a popne jednu polozku
   stackTop(s, &popped);
   stackPop(s);
-  while(!stackEmpty && popped != '(') {//pri nalezeni ( cyklus konci, netreba nic zapisovat do postExpr
+  while(!stackEmpty(s) && popped != '(') {//pri nalezeni ( cyklus konci, netreba nic zapisovat do postExpr
     postExpr[*postLen] = popped;
     (*postLen)++;
     stackTop(s, &popped);
@@ -74,6 +74,27 @@ void untilLeftPar ( tStack* s, char* postExpr, unsigned* postLen ) {
 */
 void doOperation ( tStack* s, char c, char* postExpr, unsigned* postLen ) {
 
+  char atTop;
+  while(1) {
+    if(stackEmpty(s)) {
+      stackPush(s, c);
+      return;
+    } //v pripade prazdneho zasobniku rovnou ulozi operator na vrchol
+
+    stackTop(s, &atTop); //nacte do atTop vrchol zasobniku
+    if(atTop == '(' || ( (c == '/' || c == '*') && (atTop == '+' || atTop == '-') )) {
+      stackPush(s, c);
+      return;
+    } //najde-li ( nebo operator s nizsi prioritou, push c a konec funkce
+
+    //sem cyklus dojde pouze pokud na vrcholu není ani ( ani operator s nizsi prioritou,
+    //aka na vrcholu je operator se stejnou nebo vyssi prioritou
+
+    stackPop(s); //odstrani predchozi operator ze stacku
+    postExpr[*postLen] = atTop;
+    (*postLen)++; //ulozi vybrany operator do postExpr
+    //cyklus se opakuje, znova pokus o ulozeni operatoru na zasobnik
+  }
 }
 
 /*
@@ -121,9 +142,29 @@ void doOperation ( tStack* s, char c, char* postExpr, unsigned* postLen ) {
 ** řetězce konstantu NULL.
 */
 char* infix2postfix (const char* infExpr) {
+  tStack stack;
+  stackInit(&stack);
 
-  solved = 0;                        /* V případě řešení smažte tento řádek! */
-  return NULL;                /* V případě řešení můžete smazat tento řádek. */
+  //indexy (pos = position) v infixové a postfixové notaci, postPos je zaroven postLen
+  unsigned infPos = 0;
+  unsigned postPos = 0;
+
+  char* postExpr = malloc(sizeof(char) * MAX_LEN);
+
+  if(infExpr == NULL || postExpr == NULL) return NULL; //chyba alokace nebo spatny
+  //parametr, vraci NULL
+
+  while(1) {
+    if(infExpr[infPos] == '=') break;
+
+  }
+
+  //sem skoci az v momente, kdy narazi na =
+  while(!stackEmpty(&stack)) {
+
+  }
+
+  return NULL;
 }
 
 /* Konec c204.c */
