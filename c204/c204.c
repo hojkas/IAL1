@@ -157,14 +157,28 @@ char* infix2postfix (const char* infExpr) {
   while(1) {
     if(infExpr[infPos] == '=') break;
 
+    if(infExpr[infPos] == '(') stackPush(&stack, infExpr[infPos]);
+    else if(infExpr[infPos] == ')') untilLeftPar(&stack, postExpr, &postPos);
+    else if(infExpr[infPos] == '*' || infExpr[infPos] == '+' || infExpr[infPos] == '-' || infExpr[infPos] == '/')  doOperation(&stack, infExpr[infPos], postExpr, &postPos);
+    else {
+      postExpr[postPos] = infExpr[infPos];
+      postPos++;
+    }
+
+    infPos++;
   }
 
   //sem skoci az v momente, kdy narazi na =
   while(!stackEmpty(&stack)) {
-
+    stackTop(&stack, &postExpr[postPos]); //nahraje vrchol zasobniku na konec postExpr
+    postPos++;
+    stackPop(&stack);
   }
-
-  return NULL;
+  postExpr[postPos] = '=';
+  postPos++;
+  postExpr[postPos] = '\0';
+  postPos++;
+  return postExpr;
 }
 
 /* Konec c204.c */
